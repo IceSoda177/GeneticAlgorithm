@@ -7,6 +7,7 @@
 
 static double s_dMutateRate = 0.03;
 static double s_dCrossRate = 0.7;
+static double s_dAsymCrossRate = 0.03;
 
 double GenDecode(unsigned int uiGen, int iGenLen, int iSectionMax, int iSectionMin)
 {
@@ -101,6 +102,65 @@ void GenCrossOver(unsigned int *puiGenOriA, unsigned int *puiGenOriB, double dCr
 	return;
 }
 
+void GenAsymCrossOver(unsigned int *puiGenOriA, unsigned int *puiGenOriB, double dAsymCrossRate)
+{	
+	int iCrossLen = 0;
+	int iCrossStartPointA = 0;
+	int iCrossStartPointB = 0;	
+	int i = 0;
+	int iGenLen = 0;
+        unsigned int uiCrossMaskA = 0;
+	unsigned int uiCrossMaskB = 0;
+        unsigned int uiGenOriATmp = *puiGenOriA;
+        unsigned int uiGenOriBTmp = *puiGenOriB;
+	unsigned int uiGenSegA = 0;
+	unsigned int uiGenSegB = 0;
+
+        iGenLen = GetKangarooGenLen();
+	if ( ((double)rand()/RAND_MAX) <= dAsymCrossRate )
+        {
+                iCrossLen = rand()%iGenLen;
+                iCrossStartPointA = rand()%(iGenLen - iCrossLen);
+		iCrossStartPointB = rand()%(iGenLen - iCrossLen);
+
+                printf("GenAsymCrossOver: from %d, to %d, CrossLen %d\n", iCrossStartPointA, iCrossStartPointB, iCrossLen);
+
+                for (i = 0; i < iGenLen; i++)
+                {
+                        uiCrossMaskA = uiCrossMaskA << 1;
+			uiCrossMaskB = uiCrossMaskB << 1;
+                        if (iCrossStartPointA <= i && i < iCrossStartPointA + iCrossLen)
+                        {
+                                uiCrossMaskA += 1;
+                        }
+			
+			if (iCrossStartPointB <= i && i < iCrossStartPointB + iCrossLen)
+			{
+				uiCrossMaskB += 1;
+			}
+                }
+		uiGenSegA = (uiGenOriATmp & uiCrossMaskA);
+		uiGenSegB = (uiGenOriBTmp & uiCrossMaskB);
+		
+		if (iCrossStartPointA < iCrossStartPointB)
+		{
+			uiGenSegA >> (iCrossStartPointB - iCrossStartPointA);
+			uiGenSegB << (iCrossStartPointB - iCrossStartPointA);
+		}
+		else
+		{
+			uiGenSegA << (iCrossStartPointA - iCrossStartPointB);
+			uiGenSegB >> (iCrossStartPointA - iCrossStartPointB);
+		}
+
+		*puiGenOriA = (uiGenOriATmp & ~uiCrossMaskA) | uiGenSegB;
+		*puiGenOriB = (uiGenOriBTmp & ~uiCrossMaskB) | uiGenSegA;
+                
+		printf("GenAsymCrossOver: after %x, %x\n", *puiGenOriA, *puiGenOriB );
+        }
+        return;
+}
+
 int GenFilter(KangarooPack *pKangarooPack)
 {
 	int i = 0;
@@ -158,6 +218,8 @@ int GenFilter(KangarooPack *pKangarooPack)
 		//原始数据发生改变
 		/* 双亲基因概率交叉产生新的基因 */
 		GenCrossOver(&(tKangarooTmpA.uiGenetic), &(tKangarooTmpB.uiGenetic), s_dCrossRate);
+		
+		GenAsymCrossOver(&(tKangarooTmpA.uiGenetic), &(tKangarooTmpB.uiGenetic), s_dAsymCrossRate);
 
 		/* 新基因概率性突变 */
 		tKangarooTmpA.uiGenetic = GenMutation(tKangarooTmpA.uiGenetic, s_dMutateRate);

@@ -7,6 +7,7 @@ double GenMapping(unsigned int uiGen, int iGenLen, int iSectionMax, int iSection
 //Kangaroo* ChromoRoulette(KangarooPack *pKangarooPack);
 unsigned int GenMutation(unsigned int uiGenOri, double dMutateRate);
 void GenCrossOver(unsigned int *puiGenOriA, unsigned int *puiGenOriB, double dCrossRate);
+void GenAsymCrossOver(unsigned int *puiGenOriA, unsigned int *puiGenOriB, double dAsymCrossRate);
 int GenFilter(KangarooPack *pKangarooPack);
 double GetBestFitness(KangarooPack *pKangarooPack);
 unsigned int GetBestGen(KangarooPack *pKangarooPack);
