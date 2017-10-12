@@ -1,4 +1,4 @@
-#include "GenAlg.h"
+#include "genalg.h"
 #include "kangaroo.h"
 #include <stdio.h>
 

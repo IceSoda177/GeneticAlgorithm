@@ -1,7 +1,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include "kangaroo.h"
-#include "GenAlg.h"
+#include "genalg.h"
 #include <stdio.h>
 #include <string.h>
 

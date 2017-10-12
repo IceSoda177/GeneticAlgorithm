@@ -2,7 +2,7 @@
 this file discrib an individual
 */
 #include "kangaroo.h"
-#include "GenAlg.h"
+#include "genalg.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
